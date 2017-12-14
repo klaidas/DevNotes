@@ -8,10 +8,19 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
-import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class NoteActivity extends AppCompatActivity {
 
+    private ArrayList<String> descriptors = new ArrayList<>(Arrays.asList("public", "private", "protected", "static", "final", "extends",
+            "implements", "class", "import", "package", "super", "void", "null", "true", "false", "new"));
+
+    private ArrayList<String> dataTypes = new ArrayList<>(Arrays.asList("int", "String", "boolean", "byte", "char", "short", "long",
+            "float", "double", "List", "ArrayList"));
+
+    private ArrayList<String> equalsOperators = new ArrayList<>(Arrays.asList("==", "!=", ">=", "=>", "<=", "=<", "+=", "=+", "-=", "=-"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +30,9 @@ public class NoteActivity extends AppCompatActivity {
         final EditText notesEdit = (EditText) findViewById(R.id.noteText);
         if(notesEdit != null){
             notesEdit.addTextChangedListener(new TextWatcher() {
+
                 boolean lock = false;
+                boolean backspace = false;
                 SpannableString spannable;
                 Object span;
 
@@ -54,7 +65,22 @@ public class NoteActivity extends AppCompatActivity {
                                 }
                             }
                         }
+                    } else{
+                        /*
+                         * If Deleting Tab Spaces
+                         */
+                        if(start > 7){
+                            if(s.subSequence(start - 7, start).toString().equals("       ")){
+                                backspace = true;
+                                span = new Object();
+                                spannable = new SpannableString(s);
+                                spannable.setSpan(span, start - 7, start, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                            }
+                        }
                     }
+
+
+
                 }
 
                 @Override
@@ -63,20 +89,35 @@ public class NoteActivity extends AppCompatActivity {
                     if (!lock && spannable != null) {
                         lock = true;
                         int start = spannable.getSpanStart(span);
+                        int end = spannable.getSpanEnd(span);
 
                         /*
-                         * If Space -> Change to Tab
-                         * [[CHANGE: String tab should be class variable with default 8 spaces(7) allow user to change setting]]
+                         * If Backspace back into 8 spaces (tab) -> Delete Tab.
                          */
-                        if (s.charAt(start) == ' ' && (s.charAt(start - 1) == '\n' || s.charAt(start - 1) == ' ')) {
-                            String tab = "       ";
-                            s.insert(start + 1, tab);
+                        if(backspace) {
+                            if (end >= 7) {
+                                if(s.subSequence(start, end).toString().equals("       ")){
+                                    s.delete(start, end);
+                                    backspace = false;
+                                }
+                            }
+                        }else {
+                            /*
+                             * If Space -> Change to Tab
+                             * [[CHANGE: String tab should be class variable with default 8 spaces(7) allow user to change setting]]
+                             */
+                            if (s.charAt(start) == ' ' && (s.charAt(start - 1) == '\n' || s.charAt(start - 1) == ' ')) {
+                                String tab = "       ";
+                                s.insert(start + 1, tab);
+                            }
+                            /*
+                             * If Curly Brace -> NewLine and AutoComplete Curly Brace
+                             */
+                            else if (s.charAt(start) == '{') {
+                                String finishCurly = "\n        \n}";
+                                s.insert(start + 1, finishCurly);
+                            }
                         }
-                        if (s.charAt(start) == '{') {
-                            String finishCurly = "\n\n}";
-                            s.insert(start + 1, finishCurly);
-                        }
-
                         /*
                          * Reset Spans and Release Lock
                          */

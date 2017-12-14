@@ -18,7 +18,8 @@
         android:layout_height="match_parent"
         android:id="@+id/noteText"
         android:fontFamily="sans-serif"
-        android:textSize="15sp"
+        android:textSize="14sp"
+        android:lineSpacingExtra="10dp"
         android:textColor="#E8E8E8"
         />
 
