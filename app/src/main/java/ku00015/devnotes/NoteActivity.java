@@ -1,11 +1,14 @@
 package ku00015.devnotes;
 
+import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -14,8 +17,8 @@ import java.util.Arrays;
 
 public class NoteActivity extends AppCompatActivity {
 
-    private ArrayList<String> descriptors = new ArrayList<>(Arrays.asList("public", "private", "protected", "static", "final", "extends",
-            "implements", "class", "import", "package", "super", "void", "null", "true", "false", "new"));
+    private ArrayList<String> descriptors = new ArrayList<>(Arrays.asList("public ", "private ", "protected ", "static ", "final ", " extends ",
+            " implements ", " class ", "import ", "package ", "super", " void ", "null", "true", "false", "new"));
 
     private ArrayList<String> dataTypes = new ArrayList<>(Arrays.asList("int", "String", "boolean", "byte", "char", "short", "long",
             "float", "double", "List", "ArrayList"));
@@ -125,6 +128,26 @@ public class NoteActivity extends AppCompatActivity {
                         spannable = null;
                         span = null;
                         lock = false;
+                    }
+
+
+                    for(int i = 0; i < descriptors.size(); i++) {
+                        if (s.toString().contains(descriptors.get(i))){
+                            if (s.toString().lastIndexOf(descriptors.get(i)) >= 0){
+                                ForegroundColorSpan descColor = new ForegroundColorSpan(ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2));
+                                int index = s.toString().lastIndexOf(descriptors.get(i));
+                                s.setSpan(descColor, index, index + descriptors.get(i).length(), Spanned.SPAN_COMPOSING);
+                            }
+                        }
+                    }
+                    for(int i = 0; i < dataTypes.size(); i++){
+                        if (s.toString().contains(dataTypes.get(i))) {
+                            if (s.toString().lastIndexOf(dataTypes.get(i)) >= 0){
+                                ForegroundColorSpan dataColor = new ForegroundColorSpan(ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color4));
+                                int index = s.toString().lastIndexOf(dataTypes.get(i));
+                                s.setSpan(dataColor, index, index + dataTypes.get(i).length(), Spanned.SPAN_COMPOSING);
+                            }
+                        }
                     }
                 }
             });
