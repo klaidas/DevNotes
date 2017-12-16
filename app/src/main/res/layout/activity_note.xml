@@ -28,8 +28,9 @@
         android:id="@+id/noteText"
         android:fontFamily="sans-serif-light"
         android:textSize="14sp"
-        android:lineSpacingExtra="10dp"
+        android:lineSpacingExtra="6dp"
         android:textColor="#E8E8E8"
+        android:inputType="textMultiLine|textNoSuggestions"
         />
 
 
