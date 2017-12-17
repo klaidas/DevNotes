@@ -43,7 +43,25 @@ public class NoteActivity extends AppCompatActivity {
                 Object span;
 
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    if(count > 0){
+                        /*
+                         * If Deleting a Space
+                         */
+                        if(start >= 7 && s.toString().charAt(start) == ' '){
+                            /*
+                             * If the space is part of a tabbed space
+                             */
+                            if (s.subSequence(start - 7, start + 1).toString().equals("        ")) {
+                                backspace = true;
+                                span = new Object();
+                                spannable = new SpannableString(s);
+                                spannable.setSpan(span, start - 7, start - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }
+                        }
+                    }
+
+                }
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -63,30 +81,15 @@ public class NoteActivity extends AppCompatActivity {
                          * If Text Entered was a " " WHERE the current index isn't 0 AND the index before was a "\n" OR " "
                          */
                         if(s.charAt(start) == ' '){
-                            if(start != 0){
-                                if(s.charAt(start - 1) == '\n' || s.charAt(start - 1) == ' '){
+                            if(start != 0) {
+                                if (s.charAt(start - 1) == '\n' || s.charAt(start - 1) == ' ') {
                                     span = new Object();
                                     spannable = new SpannableString(s);
                                     spannable.setSpan(span, start, (start + count), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 }
                             }
                         }
-                    } else{
-                        /*
-                         * If Deleting Tab Spaces
-                         */
-                        if(start > 7){
-                            if(s.subSequence(start - 7, start).toString().equals("       ")){
-                                backspace = true;
-                                span = new Object();
-                                spannable = new SpannableString(s);
-                                spannable.setSpan(span, start - 7, start, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            }
-                        }
-                    }
-
-
-
+                    } // Else if Backspace {
                 }
 
                 @Override
@@ -99,12 +102,12 @@ public class NoteActivity extends AppCompatActivity {
 
                         /*
                          * If Backspace back into 8 spaces (tab) -> Delete Tab.
+                         * [[String SubSequence START=INCLUSIVE, END=EXCLUSIVE (so need to +1)]]
                          */
-
                         if(backspace) {
-                            if (end >= 7) {
-                                if(s.subSequence(start, end).toString().equals("       ")){
-                                    s.delete(start, end);
+                            if (end >= 6) {
+                                if(s.subSequence(start, end + 1).toString().equals("       ")){
+                                    s.delete(start, end + 1);
                                     backspace = false;
                                 }
                             }
@@ -124,7 +127,6 @@ public class NoteActivity extends AppCompatActivity {
                                 String tab = "        ";
                                 String spaces = "";
                                 for(int i = 0; i < getNumSpacesOfLine(s, getLineStartIndex(s,start)); i++) spaces = spaces + " ";
-
                                 String finishCurly = "\n" + spaces + tab + "\n" + spaces + "}";
                                 s.insert(start + 1, finishCurly);
                             }
@@ -182,7 +184,7 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private int getLineStartIndex(Editable s, int start){
-        return s.toString().lastIndexOf('\n', start) + 1; // Check if actually  + 1
+        return s.toString().lastIndexOf('\n', start) + 1; // +1 Lands you AFTER \n and if there is no \n it lands you at index=0
     }
     private int getNumSpacesOfLine(Editable s, int lineStartIndex){
         String sub = s.toString().substring(lineStartIndex);

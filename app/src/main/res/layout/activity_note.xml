@@ -9,29 +9,44 @@
     android:background="@drawable/background_gradient"
     android:orientation="vertical">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/devnotes"
-            android:layout_gravity="center_horizontal"/>
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:orientation="horizontal"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center_horizontal">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/noteText"
-        android:fontFamily="sans-serif-light"
-        android:textSize="14sp"
-        android:lineSpacingExtra="6dp"
-        android:textColor="#E8E8E8"
-        android:inputType="textMultiLine|textNoSuggestions"
-        />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/devnotes"
+                    android:layout_gravity="center_horizontal"/>
 
+            </LinearLayout>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/noteText"
+                android:fontFamily="sans-serif-light"
+                android:textSize="14sp"
+                android:lineSpacingExtra="6dp"
+                android:textColor="#E8E8E8"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:textAlignment="textStart"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
