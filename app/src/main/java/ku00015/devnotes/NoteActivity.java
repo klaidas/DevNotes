@@ -18,14 +18,15 @@ import java.util.Arrays;
 public class NoteActivity extends AppCompatActivity {
 
     private ArrayList<String> descriptors = new ArrayList<>(Arrays.asList("public ", "private ", "protected ", "static ", "final ", " extends ",
-            " implements ", " class ", "import ", "package ", "super", " void "));
+            " implements ", "class ", "import ", "package ", "super", "void "));
 
     private ArrayList<String> dataTypes = new ArrayList<>(Arrays.asList("int", "String", "boolean", "byte", "char", "short", "long",
             "float", "double", "List", "ArrayList"));
 
     private ArrayList<String> descriptorsOther = new ArrayList<>(Arrays.asList("return ", "this", "null", "true", "false", "new"));
 
-    private ArrayList<String> equalsOperators = new ArrayList<>(Arrays.asList("==", "!=", ">=", "=>", "<=", "=<", "+=", "=+", "-=", "=-"));
+    private ArrayList<String> loopsConditionals = new ArrayList<>(Arrays.asList("if", "else", "switch", "case", "break", "default", "for",
+            "while", "do"));
 
 
     @Override
@@ -78,6 +79,14 @@ public class NoteActivity extends AppCompatActivity {
                             spannable.setSpan(span, start, (start + count), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         }
                         /*
+                         * If New-Lined
+                         */
+                        if(s.charAt(start) == '\n') {
+                            span = new Object();
+                            spannable = new SpannableString(s);
+                            spannable.setSpan(span, start, (start + count), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        }
+                        /*
                          * If Text Entered was a " " WHERE the current index isn't 0 AND the index before was a "\n" OR " "
                          */
                         if(s.charAt(start) == ' '){
@@ -119,6 +128,14 @@ public class NoteActivity extends AppCompatActivity {
                             if (s.charAt(start) == ' ' && (s.charAt(start - 1) == '\n' || s.charAt(start - 1) == ' ')) {
                                 String tab = "       ";
                                 s.insert(start + 1, tab);
+                            }
+                            /*
+                             * If New-Lined -> Adopt the appropriate tabbing from previous line
+                             */
+                            else if (s.charAt(start) == '\n'){
+                                String spaces = "";
+                                for(int i = 0; i < getNumSpacesOfLine(s, getLineStartIndex(s, start - 1)); i++) spaces = spaces + " ";
+                                s.insert(start + 1, spaces);
                             }
                             /*
                              * If Curly Brace -> NewLine and AutoComplete Curly Brace
@@ -173,6 +190,18 @@ public class NoteActivity extends AppCompatActivity {
                                 ForegroundColorSpan desc2Color = new ForegroundColorSpan(ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color3));
                                 int index = s.toString().lastIndexOf(descriptorsOther.get(i));
                                 s.setSpan(desc2Color, index, index + descriptorsOther.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }
+                        }
+                    }
+                    /*
+                     * Auto-Colouring for Loops and Conditionals
+                     */
+                    for(int i = 0; i < loopsConditionals.size(); i++){
+                        if(s.toString().contains(loopsConditionals.get(i))){
+                            if(s.toString().lastIndexOf(loopsConditionals.get(i)) >= 0){
+                                ForegroundColorSpan desc2Color = new ForegroundColorSpan(ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color6));
+                                int index = s.toString().lastIndexOf(loopsConditionals.get(i));
+                                s.setSpan(desc2Color, index, index + loopsConditionals.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                             }
                         }
                     }
