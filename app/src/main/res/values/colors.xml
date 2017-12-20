@@ -6,10 +6,8 @@
     <color name="darkGrey">#0C0C0C</color>
     <color name="lighterGrey">#242424</color>
 
-    <color name="color1">#571845</color>
-    <color name="color6">#ad140f</color>
-    <color name="color2">#900c3e</color>
-    <color name="color3">#c70039</color>
-    <color name="color4">#ff5733</color>
-    <color name="color5">#ffc300</color>
+    <color name="color1">#631e46</color>
+    <color name="color2">#c72a40</color>
+    <color name="color3">#ff7e58</color>
+    <color name="color4">#fde577</color>
 </resources>
