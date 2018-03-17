@@ -70,7 +70,7 @@ public class NoteActivity extends AppCompatActivity {
                      */
                     if(before == 0) {
                         /*
-                         * If Text Entered was a "{" [OR]
+                         * If Text Entered was a "{"
                          */
                         if(s.charAt(start) == '{') {
                             span = new Object();
