@@ -34,6 +34,16 @@ public class Lib {
     }
 
     /*
+     * From the current position, gets previous line's tabbing/ spacing length and creates a String of spaces
+     * to match the length of spaces.
+     */
+    public static String getSpacesOfPrevLine(Editable s, int pos){
+        String spaces = "";
+        for(int i = 0; i < Lib.getNumSpacesOfLine(s, Lib.getLineStartIndex(s, pos - 1)); i++) spaces = spaces + " ";
+        return spaces;
+    }
+
+    /*
      * Auto-Colour VALUES FROM A LIST:
      *
      * Iterate through ArrayList values to see if there are any occurances of each value,

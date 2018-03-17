@@ -8,6 +8,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import java.util.ArrayList;
@@ -131,8 +132,7 @@ public class NoteActivity extends AppCompatActivity {
                              * If New-Lined -> Adopt the appropriate tabbing from previous line
                              */
                             else if (s.charAt(start) == '\n'){
-                                String spaces = "";
-                                for(int i = 0; i < Lib.getNumSpacesOfLine(s, Lib.getLineStartIndex(s, start - 1)); i++) spaces = spaces + " ";
+                                String spaces = Lib.getSpacesOfPrevLine(s, start);
                                 s.insert(start + 1, spaces);
                             }
                             /*
@@ -140,10 +140,10 @@ public class NoteActivity extends AppCompatActivity {
                              */
                             else if (s.charAt(start) == '{') {
                                 String tab = "        ";
-                                String spaces = "";
-                                for(int i = 0; i < Lib.getNumSpacesOfLine(s, Lib.getLineStartIndex(s,start)); i++) spaces = spaces + " ";
+                                String spaces = Lib.getSpacesOfPrevLine(s, start);
                                 String finishCurly = "\n" + spaces + tab + "\n" + spaces + "}";
                                 s.insert(start + 1, finishCurly);
+                                notesEdit.setSelection(start + spaces.length() + tab.length() + 2); // + 2 to pass '{\n' at start of current pos
                             }
                         }
                         /*
