@@ -1,6 +1,5 @@
 package ku00015.devnotes;
 
-import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,9 +8,8 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -20,9 +18,8 @@ public class NoteActivity extends AppCompatActivity {
     private ArrayList<String> descriptors = new ArrayList<>(Arrays.asList("public ", "private ", "protected ", "static ", "final ", " extends ",
             " implements ", "class ", "import ", "package ", "super"));
 
-    private ArrayList<String> dataTypes = new ArrayList<>(Arrays.asList("int ", "int[", "int>", "String ", "String>", "String[", "boolean ", "byte ",
-            "byte[", "byte>", "char ", "char[", "char>", "short ", "short[", "short>", "long ", "long[", "long>", "float ", "float[", "float>",
-            "double ", "double[", "double>", "List<", "ArrayList<", "void "));
+    private ArrayList<String> dataTypes = new ArrayList<>(Arrays.asList("int ", "String ", "boolean ", "byte ", "char ", "short ", "long ",
+            "float ", "double ", "List", "ArrayList", "void "));
 
     private ArrayList<String> descriptorsOther = new ArrayList<>(Arrays.asList("return ", "this", "null", "true", "false", "new"));
 
@@ -135,7 +132,7 @@ public class NoteActivity extends AppCompatActivity {
                              */
                             else if (s.charAt(start) == '\n'){
                                 String spaces = "";
-                                for(int i = 0; i < getNumSpacesOfLine(s, getLineStartIndex(s, start - 1)); i++) spaces = spaces + " ";
+                                for(int i = 0; i < Lib.getNumSpacesOfLine(s, Lib.getLineStartIndex(s, start - 1)); i++) spaces = spaces + " ";
                                 s.insert(start + 1, spaces);
                             }
                             /*
@@ -144,7 +141,7 @@ public class NoteActivity extends AppCompatActivity {
                             else if (s.charAt(start) == '{') {
                                 String tab = "        ";
                                 String spaces = "";
-                                for(int i = 0; i < getNumSpacesOfLine(s, getLineStartIndex(s,start)); i++) spaces = spaces + " ";
+                                for(int i = 0; i < Lib.getNumSpacesOfLine(s, Lib.getLineStartIndex(s,start)); i++) spaces = spaces + " ";
                                 String finishCurly = "\n" + spaces + tab + "\n" + spaces + "}";
                                 s.insert(start + 1, finishCurly);
                             }
@@ -164,102 +161,44 @@ public class NoteActivity extends AppCompatActivity {
                     for (ForegroundColorSpan allSpan : allSpans) {
                         s.removeSpan(allSpan);
                     }
+
                     /*
                      * Auto-Colouring for Descriptors
                      */
-                    for(int i = 0; i < descriptors.size(); i++) {
-                        if(s.toString().contains(descriptors.get(i))){
-                            int c = s.toString().indexOf(descriptors.get(i));
-                            while (c >= 0) {
-                                ForegroundColorSpan descColor = new ForegroundColorSpan(ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color1));
-                                s.setSpan(descColor, c, c + descriptors.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                c = s.toString().indexOf(descriptors.get(i), c + 1);
-                            }
-                        }
-                    }
+                    int descColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color1);
+                    Lib.autoColour(s, descriptors, descColor);
+
                     /*
-                     * Auto-Colouring for Datatypes
+                     * Auto-Colouring for Data Types
                      */
-                    for(int i = 0; i < dataTypes.size(); i++) {
-                        if(s.toString().contains(dataTypes.get(i))){
-                            int c = s.toString().indexOf(dataTypes.get(i));
-                            while (c >= 0) {
-                                ForegroundColorSpan descColor = new ForegroundColorSpan(ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color3));
-                                s.setSpan(descColor, c, c + dataTypes.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                c = s.toString().indexOf(dataTypes.get(i), c + 1);
-                            }
-                        }
-                    }
+                    int datatypeColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color3);
+                    Lib.autoColour(s, dataTypes, datatypeColor);
+
                     /*
                      * Auto-Colouring for Other Descriptors
                      */
-                    for(int i = 0; i < descriptorsOther.size(); i++) {
-                        if(s.toString().contains(descriptorsOther.get(i))){
-                            int c = s.toString().indexOf(descriptorsOther.get(i));
-                            while (c >= 0) {
-                                ForegroundColorSpan descColor = new ForegroundColorSpan(ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2));
-                                s.setSpan(descColor, c, c + descriptorsOther.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                c = s.toString().indexOf(descriptorsOther.get(i), c + 1);
-                            }
-                        }
-                    }
+                    int odColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
+                    Lib.autoColour(s, descriptorsOther, odColor);
+
                     /*
                      * Auto-Colouring for Loops and Conditionals
                      */
-                    for(int i = 0; i < loopsConditionals.size(); i++) {
-                        if(s.toString().contains(loopsConditionals.get(i))){
-                            int c = s.toString().indexOf(loopsConditionals.get(i));
-                            while (c >= 0) {
-                                ForegroundColorSpan descColor = new ForegroundColorSpan(ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2));
-                                s.setSpan(descColor, c, c + loopsConditionals.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                c = s.toString().indexOf(loopsConditionals.get(i), c + 1);
-                            }
-                        }
-                    }
+                    int loopColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
+                    Lib.autoColour(s, loopsConditionals, loopColor);
+
                     /*
                      * Auto-Colouring for Quotes/ Strings
                      */
                     if(s.toString().contains("\"")){
-                        /*
-                         * If number of occurances of " is more than 1, Loop by getting quotation indexes and setting colour on them,
-                         * update occurances left (take away the two you just colourised) and do this until occurances is less than 2.
-                         */
-                        int c = s.toString().split("\"").length - 1;
-                        if(c > 1){
-                            int firstQuote = s.toString().indexOf("\"", 0);
-                            while(c > 1){
-                                if(firstQuote >= 0){
-                                    int secondQuote = s.toString().indexOf("\"", firstQuote + 1);
-                                    if(secondQuote >= 0){
-                                        ForegroundColorSpan quoteColor = new ForegroundColorSpan(ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color4));
-                                        s.setSpan(quoteColor, firstQuote, secondQuote + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        firstQuote = s.toString().indexOf("\"", secondQuote + 1);
-                                    }
-                                }
-                                c = c - 2;
-                            }
-                        }
+                        int quoteColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color4);
+                        Lib.autoColour(s, quoteColor);
                     }
                 }
             });
         }
-
-
     }
 
-    private int getLineStartIndex(Editable s, int start){
-        return s.toString().lastIndexOf('\n', start) + 1; // +1 Lands you AFTER \n and if there is no \n it lands you at index=0
-    }
-    private int getNumSpacesOfLine(Editable s, int lineStartIndex){
-        String sub = s.toString().substring(lineStartIndex);
-        int c = 0;
-        for(int i = 0; i < sub.length(); i++){
-            if(sub.charAt(i) == ' '){
-                c++;
-            } else{
-                break;
-            }
-        }
-        return c;
+    public void onBackClick(View view) {
+        finish();
     }
 }
