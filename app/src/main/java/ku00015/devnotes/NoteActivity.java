@@ -8,7 +8,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import java.util.ArrayList;
@@ -16,16 +15,28 @@ import java.util.Arrays;
 
 public class NoteActivity extends AppCompatActivity {
 
-    private ArrayList<String> descriptors = new ArrayList<>(Arrays.asList("public ", "private ", "protected ", "static ", "final ", " extends ",
-            " implements ", "class ", "import ", "package ", "super"));
+    // Check if char before each word is ['', ' ', '\n'] and after is ['', ' ']
+    private ArrayList<String> descriptors = new ArrayList<>(Arrays.asList("public", "private", "protected",
+            "static", "final", "extends", "implements", "class", "import", "package", "void"));
 
-    private ArrayList<String> dataTypes = new ArrayList<>(Arrays.asList("int ", "String ", "boolean ", "byte ", "char ", "short ", "long ",
-            "float ", "double ", "List", "ArrayList", "void "));
+    // Check if char before each word is ['', ' ', '\n'] and after is ['', ' ', '\n' , '[']
+    private ArrayList<String> dataTypes = new ArrayList<>(Arrays.asList("int", "String", "boolean", "byte", "char",
+            "short", "long", "float", "double"));
 
-    private ArrayList<String> descriptorsOther = new ArrayList<>(Arrays.asList("return ", "this", "null", "true", "false", "new"));
+    // Check if char before each word is ['', ' ', '\n', '='] and after is ['', ' ', '\n', ';']
+    private ArrayList<String> otherDescriptors = new ArrayList<>(Arrays.asList("return", "null", "true", "false", "new"));
 
+    // Check if char before each word is ['', ' ', '\n', '=', '.', '('] and after is ['', ' ', '\n', ';', '.', ')']
+    private ArrayList<String> otherDottable = new ArrayList<>(Arrays.asList("this", "super"));
+
+    // Check if char before each word is ['', ' ', '\n', '}'] and after is ['', ' ', '\n', '(', '{', ':', ';']
     private ArrayList<String> loopsConditionals = new ArrayList<>(Arrays.asList("if", "else", "switch", "case", "break", "default", "for",
             "while", "do"));
+
+    private int colour1 = R.color.color1;
+    private int colour2 = R.color.color2;
+    private int colour3 = R.color.color3;
+    private int colour4 = R.color.color4;
 
 
     @Override
@@ -37,6 +48,7 @@ public class NoteActivity extends AppCompatActivity {
         if(notesEdit != null){
             notesEdit.addTextChangedListener(new TextWatcher() {
 
+                //Binary Semaphore/ Lock to Stop continuous loop of event callbacks.
                 boolean lock = false;
                 boolean backspace = false;
                 SpannableString spannable;
@@ -109,7 +121,7 @@ public class NoteActivity extends AppCompatActivity {
                         int end = spannable.getSpanEnd(span);
 
                         /*
-                         * If Backspace back into 8 spaces (tab) -> Delete Tab.
+                         * [If Backspacing into a Tab (8 spaces)] -> Delete whole Tab
                          * [[String SubSequence START=INCLUSIVE, END=EXCLUSIVE (so need to +1)]]
                          */
                         if(backspace) {
@@ -121,7 +133,7 @@ public class NoteActivity extends AppCompatActivity {
                             }
                         }else {
                             /*
-                             * If Space -> Change to Tab
+                             * [If Space] -> Change to Tab
                              * [[CHANGE: String tab should be class variable with default 8 spaces(7) allow user to change setting]]
                              */
                             if (s.charAt(start) == ' ' && (s.charAt(start - 1) == '\n' || s.charAt(start - 1) == ' ')) {
@@ -129,14 +141,14 @@ public class NoteActivity extends AppCompatActivity {
                                 s.insert(start + 1, tab);
                             }
                             /*
-                             * If New-Lined -> Adopt the appropriate tabbing from previous line
+                             * [If New-Lined] -> Adopt the appropriate tabbing from previous line
                              */
                             else if (s.charAt(start) == '\n'){
                                 String spaces = Lib.getSpacesOfPrevLine(s, start);
                                 s.insert(start + 1, spaces);
                             }
                             /*
-                             * If Curly Brace -> NewLine and AutoComplete Curly Brace
+                             * [If Curly Brace] -> NewLine and AutoComplete Curly Brace
                              */
                             else if (s.charAt(start) == '{') {
                                 String tab = "        ";
@@ -161,30 +173,52 @@ public class NoteActivity extends AppCompatActivity {
                     for (ForegroundColorSpan allSpan : allSpans) {
                         s.removeSpan(allSpan);
                     }
+                    /*
+                     * Define Variables to be re-used.
+                     */
+                    int colour;
+                    String expPrev;
+                    String expNext;
 
                     /*
                      * Auto-Colouring for Descriptors
                      */
-                    int descColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color1);
-                    Lib.autoColour(s, descriptors, descColor);
+                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color1);
+                    expPrev = ".?( |\\n)";
+                    expNext = ".?( )";
+                    Lib.autoColour(s, descriptors, colour, expPrev, expNext);
 
                     /*
                      * Auto-Colouring for Data Types
                      */
-                    int datatypeColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color3);
-                    Lib.autoColour(s, dataTypes, datatypeColor);
+                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color3);
+                    expPrev = ".?( |\\n)";
+                    expNext = ".?( |\\n|\\[)";
+                    Lib.autoColour(s, dataTypes, colour, expPrev, expNext);
 
                     /*
                      * Auto-Colouring for Other Descriptors
                      */
-                    int odColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
-                    Lib.autoColour(s, descriptorsOther, odColor);
+                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
+                    expPrev = ".?( |\\n|\\=)";
+                    expNext = ".?( |\\n|;)"; // may need to escape semicolon
+                    Lib.autoColour(s, otherDescriptors, colour, expPrev, expNext);
+
+                    /*
+                     * Auto-Colouring for Other Descriptors (Separated to allow them to be "dottable").
+                     */
+                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
+                    expPrev = ".?( |\\n|\\=|\\.|\\()";
+                    expNext = ".?( |\\n|;|\\.|\\))";
+                    Lib.autoColour(s, otherDottable, colour, expPrev, expNext);
 
                     /*
                      * Auto-Colouring for Loops and Conditionals
                      */
-                    int loopColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
-                    Lib.autoColour(s, loopsConditionals, loopColor);
+                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
+                    expPrev = ".?( |\\n|\\})"; // ['', ' ', '\n', '}'] and after is ['', ' ', '\n', '(', '{', ':', ';']
+                    expNext = ".?( |\\n|\\(|\\{|:|;)"; // may need to escape semicolon and colon
+                    Lib.autoColour(s, loopsConditionals, colour, expPrev, expNext);
 
                     /*
                      * Auto-Colouring for Quotes/ Strings

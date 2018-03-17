@@ -48,16 +48,24 @@ public class Lib {
      *
      * Iterate through ArrayList values to see if there are any occurances of each value,
      * if there are set a colour span on Editable s.
+     *
      * No return needed:- Editable s is passed by pointer, object reference's values are changed within.
      */
-    public static void autoColour(Editable s, ArrayList<String> arr, int colourID){
+    public static void autoColour(Editable s, ArrayList<String> arr, int colourID, String regexPrev, String regexNext){
         for(int i = 0; i < arr.size(); i++) {
-            if(s.toString().contains(arr.get(i))){
-                int c = s.toString().indexOf(arr.get(i));
+            String word = arr.get(i);
+            if(s.toString().contains(word)){
+                int c = s.toString().indexOf(word);
                 while (c >= 0) {
-                    ForegroundColorSpan colour = new ForegroundColorSpan(colourID);
-                    s.setSpan(colour, c, c + arr.get(i).length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    c = s.toString().indexOf(arr.get(i), c + 1);
+                    // ONE CHAR BEFORE WORD
+                    if(c == 0 || (c > 0 && String.valueOf(s.charAt(c - 1)).matches(regexPrev))) {
+                        // ONE CHAR AFTER WORD
+                        if(c + word.length() >= s.length() || (c + word.length() < s.length() && String.valueOf(s.charAt(c + word.length())).matches(regexNext))) {
+                                ForegroundColorSpan colour = new ForegroundColorSpan(colourID);
+                                s.setSpan(colour, c, c + word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        }
+                    }
+                    c = s.toString().indexOf(word, c + 1);
                 }
             }
         }
