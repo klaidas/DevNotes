@@ -13,10 +13,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void onNotesClick(View view) {
-        Intent notesIntent = new Intent(this, NoteActivity.class);
-        startActivity(notesIntent);
-
+    public void onJavaClick(View view) {
+        Intent javaIntent = new Intent(this, JavaNote.class);
+        startActivity(javaIntent);
     }
 
+
+    public void onCppClick(View view) {
+        Intent cppIntent = new Intent(this, CppNote.class);
+        startActivity(cppIntent);
+    }
 }

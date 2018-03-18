@@ -13,7 +13,7 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class NoteActivity extends AppCompatActivity {
+public class JavaNote extends AppCompatActivity {
 
     // Check if char before each word is ['', ' ', '\n'] and after is ['', ' ']
     private ArrayList<String> descriptors = new ArrayList<>(Arrays.asList("public", "private", "protected",
@@ -183,7 +183,7 @@ public class NoteActivity extends AppCompatActivity {
                     /*
                      * Auto-Colouring for Descriptors
                      */
-                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color1);
+                    colour = ContextCompat.getColor(JavaNote.this.getApplicationContext(), R.color.color1);
                     expPrev = ".?( |\\n)";
                     expNext = ".?( )";
                     Lib.autoColour(s, descriptors, colour, expPrev, expNext);
@@ -191,23 +191,23 @@ public class NoteActivity extends AppCompatActivity {
                     /*
                      * Auto-Colouring for Data Types
                      */
-                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color3);
-                    expPrev = ".?( |\\n)";
+                    colour = ContextCompat.getColor(JavaNote.this.getApplicationContext(), R.color.color3);
+                    expPrev = ".?( |\\n|\\(|\\{|;)";
                     expNext = ".?( |\\n|\\[)";
                     Lib.autoColour(s, dataTypes, colour, expPrev, expNext);
 
                     /*
                      * Auto-Colouring for Other Descriptors
                      */
-                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
+                    colour = ContextCompat.getColor(JavaNote.this.getApplicationContext(), R.color.color2);
                     expPrev = ".?( |\\n|\\=)";
-                    expNext = ".?( |\\n|;)"; // may need to escape semicolon
+                    expNext = ".?( |\\n|;)";
                     Lib.autoColour(s, otherDescriptors, colour, expPrev, expNext);
 
                     /*
                      * Auto-Colouring for Other Descriptors (Separated to allow them to be "dottable").
                      */
-                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
+                    colour = ContextCompat.getColor(JavaNote.this.getApplicationContext(), R.color.color2);
                     expPrev = ".?( |\\n|\\=|\\.|\\()";
                     expNext = ".?( |\\n|;|\\.|\\))";
                     Lib.autoColour(s, otherDottable, colour, expPrev, expNext);
@@ -215,16 +215,16 @@ public class NoteActivity extends AppCompatActivity {
                     /*
                      * Auto-Colouring for Loops and Conditionals
                      */
-                    colour = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color2);
-                    expPrev = ".?( |\\n|\\})"; // ['', ' ', '\n', '}'] and after is ['', ' ', '\n', '(', '{', ':', ';']
-                    expNext = ".?( |\\n|\\(|\\{|:|;)"; // may need to escape semicolon and colon
+                    colour = ContextCompat.getColor(JavaNote.this.getApplicationContext(), R.color.color2);
+                    expPrev = ".?( |\\n|\\})";
+                    expNext = ".?( |\\n|\\(|\\{|:|;)";
                     Lib.autoColour(s, loopsConditionals, colour, expPrev, expNext);
 
                     /*
                      * Auto-Colouring for Quotes/ Strings
                      */
                     if(s.toString().contains("\"")){
-                        int quoteColor = ContextCompat.getColor(NoteActivity.this.getApplicationContext(), R.color.color4);
+                        int quoteColor = ContextCompat.getColor(JavaNote.this.getApplicationContext(), R.color.color4);
                         Lib.autoColour(s, quoteColor);
                     }
                 }

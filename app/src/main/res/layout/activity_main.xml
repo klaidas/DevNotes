@@ -19,8 +19,14 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notes"
-        android:onClick="onNotesClick"/>
+        android:text="Java"
+        android:onClick="onJavaClick"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="C/C++"
+        android:onClick="onCppClick"/>
 
 
 </LinearLayout>
